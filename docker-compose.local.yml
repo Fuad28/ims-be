@@ -1,0 +1,97 @@
+version: "3.9"
+services:
+    web:
+        build: .
+        command: ./docker-entrypoint.local.sh
+        ports:
+            - 8004:8000
+        depends_on:
+            - db
+        restart: always
+        env_file:
+            - .env
+        volumes:
+            - .:/api
+
+    db:
+        image: postgres:14.1-alpine
+        restart: always
+        ports:
+            - "5433:5432"
+        env_file:
+            - .env
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_USER=${DB_USERNAME}
+            - POSTGRES_PASSWORD=${DB_PASS}
+
+    smtp4dev:
+        image: rnwood/smtp4dev:v3
+        ports:
+            - 8002:80
+            - 22:25
+        restart: always
+        env_file:
+            - .env
+
+    # sqs:
+    #   image: "softwaremill/elasticmq-native:latest"
+    #   ports:
+    #     - "9324:9324"
+    #     - "9325:9325"
+    #   restart: always
+    #   env_file:
+    #     - .env
+
+    # redis:
+    #   image: redis:6.2-alpine
+    #   ports:
+    #     - 6379:6379
+    #   restart: always
+    #   volumes:
+    #     - redisdata:/data
+    #   env_file:
+    #     - .env
+
+    # celery:
+    #   build: .
+    #   command: celery -A app worker --loglevel=info
+    #   restart: always
+    #   depends_on:
+    #    - redis
+    #   env_file:
+    #     - .env
+    #   volumes:
+    #     - .:/moneyhqapi
+
+    # celery-beat:
+    #   build: .
+    #   command: celery -A app beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    #   restart: always
+    #   env_file:
+    #     - .env
+    #   depends_on:
+    #     - redis
+    #   volumes:
+    #     - .:/ims
+
+    # flower:
+    #   build: .
+    #   command: celery -A app flower
+    #   restart: always
+    #   env_file:
+    #     - .env
+    #   depends_on:
+    #     - web
+    #     - celery
+    #     - redis
+    #   ports:
+    #     - 5555:5555
+    #   volumes:
+    #     - .:/moneyhqapi
+
+volumes:
+    pgdata:
+    # redisdata:
