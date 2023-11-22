@@ -13,19 +13,25 @@ class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
         fields = ["id", "password", "email", "full_name", "phone", "business_name"]
 
-
-    @transaction.Atomic
-    def create(self, validated_data):
-        business_name= validated_data.pop("business_name")
     
-        if business_name:
+    def validate(self, attrs):
+        self.business_name= attrs.pop("business_name", None)
+
+        return super().validate(attrs)
+
+
+    @transaction.atomic
+    def create(self, validated_data):
+        
+        if self.business_name:
             validated_data["business"] = Business.objects.create(
-                name= business_name, 
+                name= self.business_name, 
                 email= validated_data["email"]
             )
         
         
         else:
+            
             invited_user_qs= TeamInvitation.objects.filter(
                 email= validated_data["email"], 
                 is_registered= False)
@@ -38,13 +44,17 @@ class UserCreateSerializer(BaseUserCreateSerializer):
                 invited_user.save()
             
             else:
-                raise serializers.ValidationError("""
-                    You have not been invited to the platform.
-                    Request a member of your team to add you or create a business account
-                    """)
-                
+                raise serializers.ValidationError(
+                    """You have not been invited to the platform. Request a member of your team to add you or create a business account""")
                 
         return super().create(validated_data)
+    
+
+    def to_representation(self, instance: User):
+        data= super().to_representation(instance)
+        data["business"]= BusinessSerializer(instance.business).data
+
+        return data
 
 
 class UserRetrieveSerializer(BaseUserSerializer):

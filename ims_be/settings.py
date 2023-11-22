@@ -158,23 +158,14 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    'SEND_ACTIVATION_EMAIL': True,
-    'SEND_CONFIRMATION_EMAIL': True,
-    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
-    'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
-    'PASSWORD_RESET_CONFIRM_URL': env.str('FRONTEND_PASSWORD_RESET_CONFIRM_URL', 'dev.monehq.io/reset-password-confirm') + '/{uid}/{token}',
-    'LOGOUT_ON_PASSWORD_CHANGE': True,
+    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_CONFIRMATION_EMAIL': False,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': False,
+    'USERNAME_CHANGED_EMAIL_CONFIRMATION': False,
 
     'SERIALIZERS': {
-        'user_create': 'api.v1.serializers.user.UserCreateSerializer',
-        'current_user': 'api.v1.serializers.user.UserRetrieveSerializer',
-        'activation': 'api.v1.serializers.user.ActivationSerializer',
-        'password_reset_confirm': 'api.v1.serializers.user.PasswordResetConfirmSerializer',
-    },
-    'EMAIL': {
-        'activation': 'api.v1.utils.djoser_mails.ActivationEmail',
-        'password_reset': 'api.v1.utils.djoser_mails.PasswordResetEmail',
-        
+        'user_create': 'api.serializers.user.UserCreateSerializer',
+        'current_user': 'api.serializers.user.UserRetrieveSerializer',
     },
 }
 

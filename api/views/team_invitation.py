@@ -45,9 +45,7 @@ class TeamInvitationView(APIView):
             send_mail(
                 subject= "IMS Invite", 
                 recipients= [data["email"] for data in invitees], 
-                template= "emails/team_invitation.html", 
+                template_name= "emails/team_invitation.html", 
                 data= {"frontend_signup_url": settings.FRONTEND_SIGNUP_URL})
 
-            return Response({"detail": "Invites sent."}, status= status.HTTP_200_OK)
-
-        return Response({"detail": "Invites sent to user already."}, status= status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Invites sent."}, status= status.HTTP_200_OK)
