@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'ims_be.middleware.DisableCSRF',
-    
+
 ]
 
 ROOT_URLCONF = 'ims_be.urls'
@@ -125,6 +125,7 @@ DEBUG = env.bool('DJANGO_DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS', default=['http://*', 'https://*'])
+FRONTEND_SIGNUP_URL= env.str("FRONTEND_SIGNUP_URL")
 
 
 # Database
@@ -151,7 +152,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'api.utils.authentication.AccountableAuthentication',
     ),
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "PAGE_SIZE": 30

@@ -38,16 +38,11 @@ null_blank = {"null": True, "blank": True}
 
 class User(TimeAndUUIDStampedBaseModel, AbstractUser):
 	
-	# id = models. UUIDField(default=uuid.uuid4, editable=False, primary_key= True)
-	# created_at = models.DateTimeField(auto_now= True)
-	# updated_at = models.DateTimeField(auto_now_add= True)
-	
-
 	username = None  # Email is primary user identifier, so username should be removed from defaults
 	full_name = models.CharField(max_length= 255)
 	email = models.EmailField(unique=True)
 	phone = models.CharField(max_length= 15, **null_blank)
-	role =  models.CharField(max_length= 11, choices= UserRoleEnum.choices, **null_blank)
+	role =  models.CharField(max_length= 11, choices= UserRoleEnum.choices, default= UserRoleEnum.ADMIN)
 	business = models.ForeignKey(Business, on_delete= models.CASCADE, related_name= "users")
 	is_active = models.BooleanField(default= True)
 	is_staff = models.BooleanField(default= False)

@@ -1,0 +1,10 @@
+{% block subject %} {{ subject }} {% endblock %} {% block html_body %}
+<h1>Hello there,</h1>
+You've been invited to collaborate on IMS
+<p><a href="{{ frontend_signup_url|safe }}">Signup to IMS</a></p>
+<p>
+	<button type="button">
+		<a href="{{ frontend_signup_url|safe }}">Signup to IMS</a>
+	</button>
+</p>
+{% endblock %}
