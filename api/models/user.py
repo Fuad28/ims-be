@@ -52,7 +52,7 @@ class User(TimeAndUUIDStampedBaseModel, AbstractUser):
 	objects = CustomUserManager()
 
 	USERNAME_FIELD = "email"
-	REQUIRED_FIELDS = ["full_name"]
+	REQUIRED_FIELDS = ["full_name", "business"]
 
 
 	def __str__(self):
