@@ -2,7 +2,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from api.models import Product, ProductItem, ProductCategory, ProductSizeCategory
-from api.serializers.product import ProductSerializer, ProductItemSerializer, ProductCategorySerializer, ProductSizeCategorySerializer
+from api.serializers.product import (
+    ProductSerializer, 
+    ProductItemSerializer, 
+    ProductCategorySerializer,
+    ProductSizeCategorySerializer)
 
 
 class ProductViewSet(ModelViewSet):
@@ -19,7 +23,6 @@ class ProductItemViewSet(ModelViewSet):
 
     def get_queryset(self):
         return ProductItem.objects.filter(business= self.request.user.business)
-
 
 
 class ProductCategoryViewSet(ModelViewSet):

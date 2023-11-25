@@ -3,10 +3,10 @@ from django.db import models
 from api.models import BusinessTimeAndUUIDStampedBaseModel, Vendor
 from api.utils.utils import generate_serial_number
 
-
+null_blank= {"null": True, "blank": True}
 class Product(BusinessTimeAndUUIDStampedBaseModel):
     name = models.CharField(max_length=255)
-    image = models.URLField()
+    image = models.URLField(**null_blank)
 
     @property
     def quantity(self):
@@ -37,8 +37,8 @@ class ProductCategory(BusinessTimeAndUUIDStampedBaseModel):
 class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name= "product_items")
     size_category = models.ForeignKey(ProductSizeCategory, on_delete=models.CASCADE, related_name= "product_items")
-    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name= "product_items")
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name= "product_items")
+    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
     serial_no= models.CharField(max_length= 10)
     quantity = models.IntegerField(default=0)
     safety_stock = models.IntegerField(default=0)
@@ -47,14 +47,14 @@ class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     holding_cost = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     ordering_cost = models.DecimalField(max_digits=10, decimal_places=2, default=1)
-    expiring_date = models.DateField()
+    expiring_date = models.DateField(**null_blank)
     barcode = models.CharField(max_length=255)
-    image = models.URLField()
+    image = models.URLField(**null_blank)
     
 
     def save(self, *args, **kwargs) -> None:
         if not self.serial_no:
-            count= self.objects.filter(business= self.business).count()
+            count= ProductItem.objects.filter(business= self.business).count()
             self.serial_no= generate_serial_number(count)
 
         return super().save(*args, **kwargs)
