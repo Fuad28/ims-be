@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models import BusinessTimeAndUUIDStampedBaseModel
+from api.models import BusinessTimeAndUUIDStampedBaseModel, Vendor
 
 
 class Product(BusinessTimeAndUUIDStampedBaseModel):
@@ -37,6 +37,7 @@ class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name= "product_items")
     size_category = models.ForeignKey(ProductSizeCategory, on_delete=models.CASCADE, related_name= "product_items")
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name= "product_items")
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name= "product_items")
     quantity = models.IntegerField(default=0)
     safety_stock = models.IntegerField(default=0)
     reordering_point = models.IntegerField(default=0)

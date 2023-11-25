@@ -1,4 +1,5 @@
 from django.db import models
+
 from api.models import BusinessTimeAndUUIDStampedBaseModel, ProductItem
 
 class Vendor(BusinessTimeAndUUIDStampedBaseModel):
@@ -8,10 +9,9 @@ class Vendor(BusinessTimeAndUUIDStampedBaseModel):
     qdp_rating = models.FloatField()
 
     @property
-    def products(self):
-        product_items_ids= [order.product_item.id for order in self.orders.select_related("produt_item")]
+    def products(self) -> models.QuerySet[ProductItem]:
+        return self.product_items.all()
 
-        ProductItem.objects.filter(id__in= product_items_ids )
 
 
     def __str__(self):
