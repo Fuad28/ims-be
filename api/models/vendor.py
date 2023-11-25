@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models import BusinessTimeAndUUIDStampedBaseModel, ProductItem
+from api.models import BusinessTimeAndUUIDStampedBaseModel
 
 class Vendor(BusinessTimeAndUUIDStampedBaseModel):
     name = models.CharField(max_length=255)
@@ -9,7 +9,7 @@ class Vendor(BusinessTimeAndUUIDStampedBaseModel):
     qdp_rating = models.FloatField()
 
     @property
-    def products(self) -> models.QuerySet[ProductItem]:
+    def products(self) -> models.QuerySet:
         return self.product_items.all()
 
 
