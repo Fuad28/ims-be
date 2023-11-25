@@ -35,6 +35,7 @@ class ProductCategory(BusinessTimeAndUUIDStampedBaseModel):
 
 
 class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
+    name = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name= "product_items")
     size_category = models.ForeignKey(ProductSizeCategory, on_delete=models.CASCADE, related_name= "product_items")
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
@@ -43,6 +44,7 @@ class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
     quantity = models.IntegerField(default=0)
     safety_stock = models.IntegerField(default=0)
     reordering_point = models.IntegerField(default=0)
+    lead_time = models.IntegerField(default=0)
     cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     holding_cost = models.DecimalField(max_digits=10, decimal_places=2, default=1)
@@ -56,6 +58,9 @@ class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
         if not self.serial_no:
             count= ProductItem.objects.filter(business= self.business).count()
             self.serial_no= generate_serial_number(count)
+
+        if not self.name:
+            self.name= f"{self.product.name} ({self.size_category.name})"
 
         return super().save(*args, **kwargs)
     
