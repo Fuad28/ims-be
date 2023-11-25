@@ -6,10 +6,29 @@ from rest_framework_simplejwt import views as simple_jwt_views
 from api.views import (
     UserViewSet,
     TeamInvitationView,
+    CustomerViewSet,
+    OrderViewSet,
+    ProductViewSet,
+    ProductItemViewSet,
+    ProductCategoryViewSet,
+    ProductSizeCategoryViewSet,
+    SaleViewSet,
+    VendorViewSet
+
 )
 
-
 app_name = "api"
+
+router = routers.DefaultRouter()
+router.register("customers", CustomerViewSet, basename= "customer-view")
+router.register("orders", OrderViewSet, basename= "order-view")
+router.register("products", ProductViewSet, basename= "product-view")
+router.register("product-items", ProductItemViewSet, basename= "product-view")
+router.register("product-categories", ProductCategoryViewSet, basename= "product-category-view")
+router.register("product-size-categories-items", ProductSizeCategoryViewSet, basename= "product-size-category-view")
+router.register("sales", SaleViewSet, basename= "sale-view")
+router.register("vendors", VendorViewSet, basename= "vendor-view")
+
 
 urlpatterns = [
     #onboarding
@@ -22,4 +41,4 @@ urlpatterns = [
 
 
     
-    ] # + router.urls
+    ]  + router.urls

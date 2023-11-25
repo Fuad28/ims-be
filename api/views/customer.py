@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from api.models import Customer
 from api.serializers.customer import CustomerSerializer
 
-class SaleViewSet(ModelViewSet):
+class CustomerViewSet(ModelViewSet):
     permission_classes= [IsAuthenticated]
     serializer_class= CustomerSerializer
 
