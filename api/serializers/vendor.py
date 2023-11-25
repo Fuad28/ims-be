@@ -10,8 +10,7 @@ class SimpleVendorSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "email", "phone_no", "qdp_rating"]
 
 
-
 class VendorSerializer(SimpleVendorSerializer):
 
-    class Meta:
-        fields = ["products"]
+    class Meta(SimpleVendorSerializer.Meta):
+        fields = SimpleVendorSerializer.Meta.fields + ["products"]
