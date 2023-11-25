@@ -1,10 +1,8 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
-import uuid
-
 from api.enums import UserRoleEnum
-from api.models import TimeAndUUIDStampedBaseModel, Business
+from api.models import BusinessTimeAndUUIDStampedBaseModel
 
 # from api.tasks.mail import send_email
 
@@ -36,14 +34,13 @@ null_blank = {"null": True, "blank": True}
 
 
 
-class User(TimeAndUUIDStampedBaseModel, AbstractUser):
+class User(BusinessTimeAndUUIDStampedBaseModel, AbstractUser):
 	
 	username = None  # Email is primary user identifier, so username should be removed from defaults
 	full_name = models.CharField(max_length= 255)
 	email = models.EmailField(unique=True)
 	phone = models.CharField(max_length= 15, **null_blank)
 	role =  models.CharField(max_length= 11, choices= UserRoleEnum.choices, default= UserRoleEnum.ADMIN)
-	business = models.ForeignKey(Business, on_delete= models.CASCADE, related_name= "users")
 	is_active = models.BooleanField(default= True)
 	is_staff = models.BooleanField(default= False)
 	is_superuser = models.BooleanField(default= False)

@@ -1,18 +1,23 @@
 from django.db import models
-from .product import ProductItem
-from .customer import Customer
+from api.models import ProductItem, Customer, BusinessTimeAndUUIDStampedBaseModel
 
-class Sales(models.Model):
-    product = models.ForeignKey(ProductItem, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    placement_date = models.DateField()
-    expected_receipt_date = models.DateField()
-    actual_receipt_date = models.DateField(null=True, blank=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+class Sales(BusinessTimeAndUUIDStampedBaseModel):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name= "sales")
+    discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    @property
+    def total_cost(self):
+        self.sales_items.aggregrate(total_cost=  models.Sum("cost_price"))
+
+class SalesItem(BusinessTimeAndUUIDStampedBaseModel):
+    sales= models.ForeignKey(Sales, on_delete= models.CASCADE, related_name= "sales_items")
+    product_item = models.ForeignKey(ProductItem, on_delete=models.CASCADE, related_name= "sales")
+    quantity = models.IntegerField(default= 1)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     def save(self, *args, **kwargs):
-        # Calculate total_price based on quantity and product selling_price
-        if self.product and self.product.selling_price:
-            self.amount = self.quantity * self.product.selling_price
+        if not self.cost_price:
+            self.cost_price = self.quantity * self.product_item.selling_price
+
         super().save(*args, **kwargs)
