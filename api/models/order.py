@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 
 from api.models import BusinessTimeAndUUIDStampedBaseModel, ProductItem, Vendor
 
@@ -41,9 +41,15 @@ class OrderItem(BusinessTimeAndUUIDStampedBaseModel):
     qty_defected = models.IntegerField(default= 0)
     qty_accepted = models.IntegerField(default= 0)
     
-
+    
+    @transaction.atomic
     def save(self, *args, **kwargs):
-        self.cost_price= self.qty_ordered * self.unit_cost_price
+
+        new_cost_price = self.qty_accepted * self.unit_cost_price
+        if new_cost_price != self.cost_price:
+            self.order.total_cost_price += new_cost_price - self.cost_price
+            self.cost_price= new_cost_price
+            self.order.save()
 
         super().save(*args, **kwargs)
 

@@ -26,11 +26,7 @@ class SaleItem(BusinessTimeAndUUIDStampedBaseModel):
 
     @transaction.atomic
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self.product_item.quantity -= self.quantity
-            self.product_item.save()
-            
-
+        
         new_selling_price = self.quantity * self.unit_selling_price
         if new_selling_price != self.selling_price:
             self.sale.total_selling_price += new_selling_price - self.selling_price
