@@ -19,7 +19,7 @@ class Product(BusinessTimeAndUUIDStampedBaseModel):
 class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
     name = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name= "product_items")
-    size_category = models.ForeignKey(SizeCategory, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
+    size_category = models.ForeignKey(SizeCategory, on_delete=models.CASCADE, related_name= "product_items")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
     serial_no= models.CharField(max_length= 10)
