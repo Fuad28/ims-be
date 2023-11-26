@@ -10,8 +10,8 @@ from api.views import (
     OrderViewSet,
     ProductViewSet,
     ProductItemViewSet,
-    ProductCategoryViewSet,
-    ProductSizeCategoryViewSet,
+    SizeCategoryViewSet,
+    CategoryViewSet,
     SaleViewSet,
     VendorViewSet
 
@@ -24,8 +24,8 @@ router.register("customers", CustomerViewSet, basename= "customer-view")
 router.register("orders", OrderViewSet, basename= "order-view")
 router.register("products", ProductViewSet, basename= "product-view")
 router.register("product-items", ProductItemViewSet, basename= "product-view")
-router.register("product-categories", ProductCategoryViewSet, basename= "product-category-view")
-router.register("product-size-categories", ProductSizeCategoryViewSet, basename= "product-size-category-view")
+router.register("categories", CategoryViewSet, basename= "category-view")
+router.register("size-categories", SizeCategoryViewSet, basename= "size-category-view")
 router.register("sales", SaleViewSet, basename= "sale-view")
 router.register("vendors", VendorViewSet, basename= "vendor-view")
 

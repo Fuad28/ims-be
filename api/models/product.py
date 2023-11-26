@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models import BusinessTimeAndUUIDStampedBaseModel, Vendor
+from api.models import BusinessTimeAndUUIDStampedBaseModel, Vendor, Category, SizeCategory
 from api.utils.utils import generate_serial_number
 
 null_blank= {"null": True, "blank": True}
@@ -16,29 +16,11 @@ class Product(BusinessTimeAndUUIDStampedBaseModel):
         return f"{self.id} - {self.name} - {self.quantity}"
 
 
-class ProductSizeCategory(BusinessTimeAndUUIDStampedBaseModel):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name= "product_sizes")
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.id} - {self.product.name} - {self.name}"
-
-
-
-class ProductCategory(BusinessTimeAndUUIDStampedBaseModel):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name= "product_categories")
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.id} - {self.product.name} - {self.name}"
-    
-
-
 class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
     name = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name= "product_items")
-    size_category = models.ForeignKey(ProductSizeCategory, on_delete=models.CASCADE, related_name= "product_items")
-    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
+    size_category = models.ForeignKey(SizeCategory, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name= "product_items", **null_blank)
     serial_no= models.CharField(max_length= 10)
     quantity = models.IntegerField(default=0)

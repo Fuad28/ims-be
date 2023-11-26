@@ -1,12 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
-from api.models import Product, ProductItem, ProductCategory, ProductSizeCategory
-from api.serializers.product import (
-    ProductSerializer, 
-    ProductItemSerializer, 
-    ProductCategorySerializer,
-    ProductSizeCategorySerializer)
+from api.models import Product, ProductItem
+from api.serializers.product import ProductSerializer, ProductItemSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -23,20 +19,3 @@ class ProductItemViewSet(ModelViewSet):
 
     def get_queryset(self):
         return ProductItem.objects.filter(business= self.request.user.business)
-
-
-class ProductCategoryViewSet(ModelViewSet):
-    permission_classes= [IsAuthenticated]
-    serializer_class= ProductCategorySerializer
-
-    def get_queryset(self):
-        return ProductCategory.objects.filter(business= self.request.user.business)
-
-
-
-class ProductSizeCategoryViewSet(ModelViewSet):
-    permission_classes= [IsAuthenticated]
-    serializer_class= ProductSizeCategorySerializer
-
-    def get_queryset(self):
-        return ProductSizeCategory.objects.filter(business= self.request.user.business)
