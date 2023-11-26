@@ -4,14 +4,13 @@ from api.models import Order, OrderItem
 from api.serializers.product import ProductItemSerializer
 from api.serializers.vendor import SimpleVendorSerializer
 
-
 class OrderItemSerializer(serializers.ModelSerializer):
     product_item= ProductItemSerializer()
 
     class Meta:
         model = OrderItem
-        fields = ["id", "order", "product_item", "cost_price",
-                "total_cost_price", "qty_ordered", "qty_delayed",
+        fields = ["id", "order", "product_item", "unit_cost_price",
+                "cost_price", "qty_ordered", "qty_delayed",
                 "qty_defected", "qty_accepted"]
 
     
@@ -29,13 +28,17 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["id", "vendor", "placement_date", "expected_receipt_date",
-                 "actual_receipt_date", "cost_price",  "discount", "order_items"]
+                 "actual_receipt_date", "total_cost_price",  "discount", "order_items"]
         
     
     def to_representation(self, instance: Order):
         data=  super().to_representation(instance)
 
-        if  instance.vendor:
+        if instance.vendor:
             data["vendor"]= SimpleVendorSerializer(instance= instance.vendor).data
+
+        
+        if instance.order_items.count():
+            data["order_items"]= OrderItemSerializer(instance= instance.order_items.all(), many= True).data
 
         return data
