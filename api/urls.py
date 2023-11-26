@@ -42,3 +42,7 @@ urlpatterns = [
 
     
     ]  + router.urls
+"""
+carts_router = routers.NestedDefaultRouter(router, 'carts', lookup='cart')
+carts_router.register('items', views.CartItemViewSet, basename='cart-items')
+"""

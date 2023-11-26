@@ -17,7 +17,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class SizeCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SizeCategory
-        fields =  ["id", "name", "product"]
+        fields =  ["id", "name"]
     
     
     def create(self, validated_data):

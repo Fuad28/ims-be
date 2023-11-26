@@ -7,6 +7,9 @@ class Sale(BusinessTimeAndUUIDStampedBaseModel):
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     total_selling_price = models.DecimalField(max_digits=10, decimal_places=2, default= 0)
 
+    @property
+    def sale_items(self) -> models.QuerySet:
+        return self.sale_items.all()
 
     def save(self, *args, **kwargs):
         self.total_selling_price = self.sale_items.aggregrate(total_sp=  models.Sum("selling_price"))["total_sp"]
