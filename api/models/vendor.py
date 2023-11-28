@@ -7,12 +7,18 @@ class Vendor(BusinessTimeAndUUIDStampedBaseModel):
     email = models.EmailField()
     phone_no = models.CharField(max_length=20)
     qdp_rating = models.FloatField(default= 0)
+    lead_time= models.IntegerField(default= 0)
+    total_qdp_rating = models.FloatField(default= 0)
     completed_orders= models.IntegerField(default= 0)
     total_lead_time= models.IntegerField(default= 0)
 
     @property
     def avg_lead_time(self):
-        return ceil(self.completed_orders/self.total_lead_time)
+        return ceil(self.total_lead_time/self.completed_orders)
+    
+    @property
+    def avg_qdp_rating(self):
+        return ceil(self.total_qdp_rating/self.completed_orders)
 
     @property
     def products(self) -> models.QuerySet:

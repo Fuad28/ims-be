@@ -1,8 +1,9 @@
 from django.db import transaction
+from django.utils import timezone
 
 from rest_framework import serializers
 
-from api.models import Order, OrderItem
+from api.models import Order, OrderItem, Vendor
 from api.serializers.product import ProductItemSerializer
 from api.serializers.vendor import SimpleVendorSerializer
 
@@ -89,3 +90,62 @@ class OrderSerializer(serializers.ModelSerializer):
         order.save()
 
         return order
+    
+
+
+class OrderReceiptProcessingSerializer(serializers.Serializer):
+    id= serializers.PrimaryKeyRelatedField(queryset= OrderItem.objects.all())
+    qty_delayed= serializers.IntegerField()
+    qty_defected= serializers.IntegerField()
+    qty_accepted= serializers.IntegerField()
+    
+    def validate_id(self, order_item: OrderItem):
+        order: Order= self.context["order"]
+
+        if not order.order_items.filter(id= order_item.id).exists():
+            raise serializers.ValidationError("Invalid order_item id")
+        
+        return order_item
+    
+
+    def validate(self, attrs):
+
+        order_item: OrderItem= attrs["id"]
+        qty_delayed= attrs["qty_delayed"]
+        qty_defected= attrs["qty_defected"]
+        qty_accepted= attrs["qty_accepted"]
+        total_qty= qty_delayed + qty_defected + qty_accepted
+
+        if total_qty != order_item.qty_ordered:
+            raise serializers.ValidationError("All order items must be accounted for.")
+        
+
+        return attrs
+    
+
+    @transaction.atomic
+    def create(self, validated_data):
+        order: Order= self.context["order"]
+        vendor: Vendor= order.vendor
+        order_item: OrderItem= validated_data["id"]
+        qty_delayed= validated_data["qty_delayed"]
+        qty_defected= validated_data["qty_defected"]
+        qty_accepted= validated_data["qty_accepted"]
+
+        order_item.product_item.quantity += qty_accepted
+        order_item.product_item.save()
+
+        order_item.qty_accepted = qty_accepted
+        order_item.qty_delayed = qty_delayed
+        order_item.qty_defected = qty_defected
+        order_item.save()
+
+        order.actual_receipt_date= timezone.now().date()
+        order.save()
+
+        vendor.completed_orders += 1
+        vendor.total_lead_time += (order.actual_receipt_date - order.placement_date).days
+        vendor.total_qdp_rating += order.compute_qdp()
+        vendor.lead_time = vendor.avg_lead_time
+        vendor.qdp_rating += vendor.avg_qdp_rating
+        vendor.save()

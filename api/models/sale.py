@@ -8,8 +8,8 @@ class Sale(BusinessTimeAndUUIDStampedBaseModel):
     total_selling_price = models.DecimalField(max_digits=10, decimal_places=2, default= 0)
 
     @property
-    def sale_items(self):
-        return self.sale_items.all()
+    def sale_items(self) -> models.QuerySet:
+        return self._sale_items.all()
 
     
     def __str__(self):
@@ -17,7 +17,7 @@ class Sale(BusinessTimeAndUUIDStampedBaseModel):
     
 
 class SaleItem(BusinessTimeAndUUIDStampedBaseModel):
-    sale= models.ForeignKey(Sale, on_delete= models.CASCADE, related_name= "sale_items")
+    sale= models.ForeignKey(Sale, on_delete= models.CASCADE, related_name= "_sale_items")
     product_item = models.ForeignKey(ProductItem, on_delete=models.CASCADE, related_name= "sales")
     quantity = models.IntegerField()
     unit_selling_price = models.DecimalField(max_digits=10, decimal_places=2, default= 0)
