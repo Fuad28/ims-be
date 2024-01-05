@@ -2,6 +2,7 @@ from typing import Literal
 from django.db import models, transaction
 
 from api.models import BusinessTimeAndUUIDStampedBaseModel, ProductItem, Vendor
+from api.enums import OrderStatusEnum
 
 class Order(BusinessTimeAndUUIDStampedBaseModel):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name= "orders")
@@ -10,6 +11,7 @@ class Order(BusinessTimeAndUUIDStampedBaseModel):
     actual_receipt_date = models.DateField(null=True, blank=True)
     total_cost_price = models.DecimalField(max_digits=10, decimal_places=2, default= 0)
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    status= models.CharField(max_length= 30, choices= OrderStatusEnum.choices, default= OrderStatusEnum.PROCESSING)
 
 
     def compute_qdp(self) -> float | Literal[0]:
