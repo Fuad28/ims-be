@@ -28,7 +28,9 @@ class ProductItemSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "serial_no",
+            "status",
             "quantity",
+            "eoq",
             "safety_stock",
             "reordering_point",
             "cost_price",

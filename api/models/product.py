@@ -47,7 +47,7 @@ class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
         choices=ProductItemStatusEnum.choices,
         default=ProductItemStatusEnum.IN_STOCK,
     )
-    eoq = models.DecimalField(max_digits=10, decimal_places=2)
+    eoq = models.DecimalField(max_digits=10, decimal_places=2, default= 0)
     quantity = models.IntegerField(default=0)
     safety_stock = models.IntegerField(default=0)
     reordering_point = models.IntegerField(default=0)
