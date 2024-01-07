@@ -6,5 +6,3 @@ from api.views.order import OrderViewSet
 from api.views.product import ProductViewSet, ProductItemViewSet
 from api.views.sale import SaleViewSet
 from api.views.vendor import VendorViewSet
-
-

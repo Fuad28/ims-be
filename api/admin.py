@@ -6,8 +6,24 @@ from api.models.user import User
 
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ("email", "full_name", "role", "business", "is_active", "is_staff", "created_at")
-    list_filter = ("email", "full_name", "role", "business", "is_active", "is_staff", "created_at")
+    list_display = (
+        "email",
+        "full_name",
+        "role",
+        "business",
+        "is_active",
+        "is_staff",
+        "created_at",
+    )
+    list_filter = (
+        "email",
+        "full_name",
+        "role",
+        "business",
+        "is_active",
+        "is_staff",
+        "created_at",
+    )
 
     add_fieldsets = (
         (
@@ -24,11 +40,20 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
-    search_fields = ("email", "full_name", "role", "business", "is_active", "is_staff", "created_at")
+    search_fields = (
+        "email",
+        "full_name",
+        "role",
+        "business",
+        "is_active",
+        "is_staff",
+        "created_at",
+    )
     ordering = ("email",)
 
 
 admin.site.register(User, CustomUserAdmin)
+
 
 class BaseModelMixinAdmin(admin.ModelAdmin):
     readonly_fields = (
@@ -39,5 +64,5 @@ class BaseModelMixinAdmin(admin.ModelAdmin):
 
 
 for model in apps.get_app_config("api").get_models():
-    if (model != User):
+    if model != User:
         admin.site.register(model, admin.ModelAdmin)

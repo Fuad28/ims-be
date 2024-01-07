@@ -6,19 +6,16 @@ from api.serializers.general import SizeCategorySerializer, CategorySerializer
 
 
 class SizeCategoryViewSet(ModelViewSet):
-    permission_classes= [IsAuthenticated]
-    serializer_class= SizeCategorySerializer
+    permission_classes = [IsAuthenticated]
+    serializer_class = SizeCategorySerializer
 
     def get_queryset(self):
-        return SizeCategory.objects.filter(business= self.request.user.business)
+        return SizeCategory.objects.filter(business=self.request.user.business)
 
 
 class CategoryViewSet(ModelViewSet):
-    permission_classes= [IsAuthenticated]
-    serializer_class= CategorySerializer
+    permission_classes = [IsAuthenticated]
+    serializer_class = CategorySerializer
 
     def get_queryset(self):
-        return Category.objects.filter(business= self.request.user.business)
-
-
-
+        return Category.objects.filter(business=self.request.user.business)

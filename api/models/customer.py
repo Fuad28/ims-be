@@ -2,6 +2,7 @@ from django.db import models
 
 from api.models import BusinessTimeAndUUIDStampedBaseModel, Business
 
+
 class Customer(BusinessTimeAndUUIDStampedBaseModel):
     name = models.CharField(max_length=255)
     email = models.EmailField()

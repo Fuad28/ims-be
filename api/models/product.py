@@ -14,7 +14,9 @@ null_blank = {"null": True, "blank": True}
 class Product(BusinessTimeAndUUIDStampedBaseModel):
     name = models.CharField(max_length=255)
     image = models.URLField(**null_blank)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products", **null_blank)
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="products", **null_blank
+    )
 
     @property
     def quantity(self):

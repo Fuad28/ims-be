@@ -159,7 +159,8 @@ class OrderReceiptProcessingSerializer(serializers.Serializer):
         order_item.save()
 
         order.actual_receipt_date = timezone.now().date()
-        if validated_data["status"]: order.status = validated_data["status"]
+        if validated_data["status"]:
+            order.status = validated_data["status"]
         order.save()
 
         vendor.completed_orders += 1

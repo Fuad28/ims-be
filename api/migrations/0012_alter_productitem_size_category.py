@@ -3,14 +3,22 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
-def set_default_size_category(apps, schema_editor):
-    ProductItem = apps.get_model('api', 'ProductItem')
-    Business = apps.get_model('api', 'Business')
-    SizeCategory = apps.get_model('api', 'SizeCategory')
 
-    default_business, created = Business.objects.get_or_create(name='Default business', email= "defaultbusiness@business.com")
-    default_size_category, created = SizeCategory.objects.get_or_create(name='Large', business= default_business)
-    ProductItem.objects.filter(size_category=None).update(size_category=default_size_category)
+def set_default_size_category(apps, schema_editor):
+    ProductItem = apps.get_model("api", "ProductItem")
+    Business = apps.get_model("api", "Business")
+    SizeCategory = apps.get_model("api", "SizeCategory")
+
+    default_business, created = Business.objects.get_or_create(
+        name="Default business", email="defaultbusiness@business.com"
+    )
+    default_size_category, created = SizeCategory.objects.get_or_create(
+        name="Large", business=default_business
+    )
+    ProductItem.objects.filter(size_category=None).update(
+        size_category=default_size_category
+    )
+
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -29,6 +37,5 @@ class Migration(migrations.Migration):
             ),
             preserve_default=False,
         ),
-
-        migrations.RunPython(set_default_size_category)
+        migrations.RunPython(set_default_size_category),
     ]

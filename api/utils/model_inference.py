@@ -35,7 +35,6 @@ def run_inference(
     start_date: None | datetime = None,
     end_date: None | datetime = None,
 ) -> float:
-    
     """Performs inference on the given data over the specified time."""
 
     keras.backend.clear_session()
@@ -94,7 +93,7 @@ def run_inference(
         "season_3",
     ]
 
-    # data= 
+    # data=
     data = pd.DataFrame(
         {
             "date": [start_date],
