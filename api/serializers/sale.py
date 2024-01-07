@@ -1,9 +1,12 @@
 from django.db import transaction
 from rest_framework import serializers
 
+from api.enums import ProductItemStatusEnum
 from api.models import Sale, SaleItem, ProductItem
 from api.serializers.product import ProductItemSerializer
 from api.serializers.customer import CustomerSerializer
+from api.utils.model_inference import compute_eoq, run_inference
+from api.utils.reorder_point import get_yesterdays_demand
 
 
 class CreateSaleItemSerializer(serializers.ModelSerializer):
@@ -111,12 +114,45 @@ class SaleSerializer(serializers.ModelSerializer):
         sale.total_selling_price = total_selling_price
         sale.save()
 
-        # update product_item quantity
+        # update product_item
         product_items = []
         for sale_item in sale_items:
-            sale_item.product_item.quantity -= sale_item.quantity
-            product_items.append(sale_item.product_item)
+            product_item = sale_item.product_item
+            product_item.quantity -= sale_item.quantity
+            product_item = self.product_item_status(product_item)
+            product_items.append(product_item)
 
         ProductItem.objects.bulk_update(product_items, ["quantity"])
 
         return sale
+
+    def product_item_status(self, product_item: ProductItem):
+        initial_status = product_item.status
+
+        if product_item.quantity == 0:
+            product_item.status = ProductItemStatusEnum.OUT_OF_STOCK
+
+        elif product_item.quantity <= product_item.reordering_point:
+            product_item.status = ProductItemStatusEnum.REORDER
+
+        else:
+            product_item.status = ProductItemStatusEnum.IN_STOCK
+
+        if (initial_status != product_item.status) & (
+            product_item.status == ProductItemStatusEnum.REORDER | 
+            product_item.status == ProductItemStatusEnum.OUT_OF_STOCK
+        ):
+            
+            demand = run_inference(
+            product_id=product_item.category.name,
+            last_demand= get_yesterdays_demand(product_item)
+        )
+                    
+            product_item.eoq= compute_eoq(
+                demand= demand,
+                unit_cost= product_item.cost_price,
+                holding_cost= product_item.holding_cost,
+                ordering_cost= product_item.ordering_cost
+            )
+
+        return product_item

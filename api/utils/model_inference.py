@@ -30,7 +30,7 @@ def create_date_features(df):
 
 
 def run_inference(
-    product_id: int,
+    product_id: str,
     last_demand: float,
     start_date: None | datetime = None,
     end_date: None | datetime = None,
@@ -39,11 +39,13 @@ def run_inference(
 
     keras.backend.clear_session()
 
+    ENCODER_PATH = "fam encoder.joblib"
     SCALER_PATH = "oil_prevDem.joblib"
     SCALERY_PATH = "sales scaler.joblib"
     MODEL_PATH = "final model.h5"
     MEAN_OIL_PRICE = 67.7
 
+    encoder = joblib.load(ENCODER_PATH)
     scalerOPd = joblib.load(SCALER_PATH)
     scalerOut = joblib.load(SCALERY_PATH)
     model = keras.models.load_model(MODEL_PATH)
@@ -93,7 +95,6 @@ def run_inference(
         "season_3",
     ]
 
-    # data=
     data = pd.DataFrame(
         {
             "date": [start_date],
@@ -121,6 +122,10 @@ def run_inference(
             "season_3": [0],
         }
     )
+
+    if type(product_id) == str:
+        product_id = encoder.transform(np.array([[product_id]]).ravel())
+        data["family"] = product_id
 
     data = create_date_features(data)
     data["previous_demand"] = last_demand
@@ -175,45 +180,12 @@ def compute_eoq(
 ) -> float:
     """Computes the Economic Order Quantity"""
 
-    if not holding_cost:
+    if holding_cost == 1:
         holding_cost = np.random.uniform(0.2, 0.3) * unit_cost
 
-    if not ordering_cost:
+    if ordering_cost == 1:
         ordering_cost = np.random.uniform(2, 300)
 
     eoq = np.sqrt(2 * ordering_cost * demand / holding_cost)
 
     return eoq
-
-
-# demand, product_id = run_inference(
-#     product_id="AUTOMOTIVE",
-#     last_demand=0, # previous day's demand
-#     start_date=[2023, 1, 1],
-#     end_date=[2023, 1, 31],
-# )
-# print(compute_eoq(demand, product_id, [1, 120]))
-
-# data["onpromotion"] = np.random.uniform(0, 10)
-# data["dcoilwtico"] = np.random.uniform(60, 75)
-# data["previous_demand"] = np.random.uniform(0, demand.tolist()[0])
-
-# match season:
-#     case "season_0":
-#         data["season_0"] = 1
-#     case "season_1":
-#         data["season_1"] = 1
-#     case "season_2":
-#         data["season_2"] = 1
-#     case "season_3":
-#         data["season_3"] = 1
-
-# match quarter:
-#     case "quarter_1":
-#         data["quarter_1"] = 1
-#     case "quarter_2":
-#         data["quarter_2"] = 1
-#     case "quarter_3":
-#         data["quarter_3"] = 1
-#     case "quarter_4":
-#         data["quarter_4"] = 1
