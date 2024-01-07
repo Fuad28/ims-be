@@ -6,6 +6,7 @@ from rest_framework import serializers
 from api.models import Order, OrderItem, Vendor
 from api.serializers.product import ProductItemSerializer
 from api.serializers.vendor import SimpleVendorSerializer
+from api.utils.reorder_point import compute_reorder_point
 
 
 class CreateOrderItemSerializer(serializers.ModelSerializer):
@@ -150,13 +151,15 @@ class OrderReceiptProcessingSerializer(serializers.Serializer):
         qty_defected = validated_data["qty_defected"]
         qty_accepted = validated_data["qty_accepted"]
 
-        order_item.product_item.quantity += qty_accepted
-        order_item.product_item.save()
-
         order_item.qty_accepted = qty_accepted
         order_item.qty_delayed = qty_delayed
         order_item.qty_defected = qty_defected
         order_item.save()
+
+        product_item= order_item.product_item
+        product_item.quantity += qty_accepted
+        product_item.reordering_point= compute_reorder_point(product_item)
+        product_item.save()
 
         order.actual_receipt_date = timezone.now().date()
         if validated_data["status"]:
@@ -164,9 +167,7 @@ class OrderReceiptProcessingSerializer(serializers.Serializer):
         order.save()
 
         vendor.completed_orders += 1
-        vendor.total_lead_time += (
-            order.actual_receipt_date - order.placement_date
-        ).days
+        vendor.total_lead_time += (order.actual_receipt_date - order.placement_date).days
         vendor.total_qdp_rating += order.compute_qdp()
         vendor.lead_time = vendor.avg_lead_time
         vendor.qdp_rating += vendor.avg_qdp_rating
