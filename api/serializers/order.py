@@ -6,7 +6,6 @@ from rest_framework import serializers
 from api.models import Order, OrderItem, Vendor
 from api.serializers.product import ProductItemSerializer
 from api.serializers.vendor import SimpleVendorSerializer
-from api.utils.reorder_point import compute_reorder_point
 
 
 class CreateOrderItemSerializer(serializers.ModelSerializer):
@@ -158,7 +157,6 @@ class OrderReceiptProcessingSerializer(serializers.Serializer):
 
         product_item= order_item.product_item
         product_item.quantity += qty_accepted
-        product_item.reordering_point= compute_reorder_point(product_item)
         product_item.save()
 
         order.actual_receipt_date = timezone.now().date()

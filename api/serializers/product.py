@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from api.enums.product import ProductItemStatusEnum
 from api.models import Product, ProductItem, Category
 from api.serializers.general import CategorySerializer, SizeCategorySerializer
 from api.serializers.vendor import SimpleVendorSerializer
@@ -19,6 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductItemSerializer(serializers.ModelSerializer):
     serial_no = serializers.CharField(max_length=10, read_only=True)
+    status= serializers.SerializerMethodField(read_only= True)
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), required=False
     )
@@ -45,6 +47,16 @@ class ProductItemSerializer(serializers.ModelSerializer):
             "category",
             "vendor",
         ]
+    
+    def get_status(self, product_item: ProductItem):
+        if product_item.quantity == 0:
+            return  ProductItemStatusEnum.OUT_OF_STOCK
+
+        elif product_item.quantity <= product_item.reordering_point:
+            return  ProductItemStatusEnum.REORDER
+
+        else:
+            return  ProductItemStatusEnum.IN_STOCK
 
     def to_representation(self, instance: ProductItem):
         data = super().to_representation(instance)

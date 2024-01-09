@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from math import ceil
 import joblib
 import pandas as pd
 import numpy as np
@@ -133,6 +134,7 @@ def run_inference(
     # run model
     days = (end_date - start_date).days
     total_demand = 0
+    monthly_demand= {i:0 for i in range(13)}
 
     for _ in range(days):
         day_of_week = data["day_of_week"].tolist()[0]
@@ -164,15 +166,16 @@ def run_inference(
         data[["dcoilwtico", "previous_demand"]] = scalerOPd.transform(
             data[["dcoilwtico", "previous_demand"]]
         )
-        current_date = current_date + datetime.timedelta(days=1)
+        current_date = current_date + timedelta(days=1)
         data["date"] = current_date
 
         X = data[cols].values
         demand = abs(scalerOut.inverse_transform(model.predict(X)))
         data["previous_demand"] = np.random.uniform(0, demand.tolist()[0])
+        monthly_demand[current_date.month] += ceil(demand[0][0])
         total_demand += demand
 
-    return total_demand
+    return ceil(total_demand[0][0]), monthly_demand
 
 
 def compute_eoq(

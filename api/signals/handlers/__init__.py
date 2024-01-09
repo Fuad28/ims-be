@@ -1,0 +1,1 @@
+from api.signals.handlers.product_item import handle_product_save

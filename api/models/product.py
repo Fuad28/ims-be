@@ -1,6 +1,5 @@
 from django.db import models
 
-from api.enums import ProductItemStatusEnum
 from api.models import (
     BusinessTimeAndUUIDStampedBaseModel,
     Vendor,
@@ -42,12 +41,10 @@ class ProductItem(BusinessTimeAndUUIDStampedBaseModel):
     vendor = models.ForeignKey(
         Vendor, on_delete=models.CASCADE, related_name="product_items", **null_blank
     )
-    status = models.CharField(
-        max_length=20,
-        choices=ProductItemStatusEnum.choices,
-        default=ProductItemStatusEnum.IN_STOCK,
-    )
+
+    annual_demand = models.DecimalField(max_digits=10, decimal_places=2, default= 0)
     eoq = models.DecimalField(max_digits=10, decimal_places=2, default= 0)
+    last_forcast = models.DateTimeField(**null_blank)
     quantity = models.IntegerField(default=0)
     safety_stock = models.IntegerField(default=0)
     reordering_point = models.IntegerField(default=0)

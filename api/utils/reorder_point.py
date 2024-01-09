@@ -19,6 +19,9 @@ def get_lead_time(product_item):
 
     for order_item in order_items:
         lead_time += (order_item.order.actual_receipt_date - order_item.order.placement_date).days
+    
+    if lead_time == 0:
+        return 1
 
     return ceil(lead_time / 3)
 
@@ -45,7 +48,7 @@ def get_consumption_duration(product_item: ProductItem):
     todays_qty = product_item.quantity
 
     while todays_qty > 0:
-        demand = run_inference(
+        demand, _ = run_inference(
             product_id=product_item.category.name,
             last_demand=last_demand,
             start_date=start_date,
@@ -70,10 +73,11 @@ def get_lead_time_consumption(product_item: ProductItem):
     daily_consumption, days = get_consumption_duration(product_item)
     last_nth_days_consumption = daily_consumption[-lead_time:]
     
-    return sum(last_nth_days_consumption)
+    return ceil(sum(last_nth_days_consumption))
 
 
 
 
 def compute_reorder_point(product_item: ProductItem):
-    return product_item.safety_stock + get_lead_time_consumption(product_item)
+    # return product_item.safety_stock + get_lead_time_consumption(product_item)
+    return product_item.safety_stock + get_lead_time(product_item) * product_item.annual_demand/365
