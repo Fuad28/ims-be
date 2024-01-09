@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models import BusinessTimeAndUUIDStampedBaseModel
+from api.models import BusinessTimeAndUUIDStampedBaseModel, TimeAndUUIDStampedBaseModel
 
 
 class SizeCategory(BusinessTimeAndUUIDStampedBaseModel):
@@ -10,7 +10,7 @@ class SizeCategory(BusinessTimeAndUUIDStampedBaseModel):
         return f"{self.id} - {self.name}"
 
 
-class Category(BusinessTimeAndUUIDStampedBaseModel):
+class Category(TimeAndUUIDStampedBaseModel):
     name = models.CharField(max_length=255)
 
     def __str__(self):
