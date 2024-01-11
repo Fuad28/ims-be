@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from math import ceil
+import os
 import joblib
 import pandas as pd
 import numpy as np
@@ -40,10 +41,15 @@ def run_inference(
 
     keras.backend.clear_session()
 
-    ENCODER_PATH = "fam encoder.joblib"
-    SCALER_PATH = "oil_prevDem.joblib"
-    SCALERY_PATH = "sales scaler.joblib"
-    MODEL_PATH = "final model.h5"
+    cwd= os.getcwd()
+    print(cwd)
+    if not "utils" in str(cwd):
+        cwd= os.path.join(cwd, "api", "utils")
+
+    ENCODER_PATH = os.path.join(cwd, "fam encoder.joblib")
+    SCALER_PATH = os.path.join(cwd, "oil_prevDem.joblib")
+    SCALERY_PATH = os.path.join(cwd, "sales scaler.joblib")
+    MODEL_PATH =  os.path.join(cwd, "final model.h5")
     MEAN_OIL_PRICE = 67.7
 
     encoder = joblib.load(ENCODER_PATH)
