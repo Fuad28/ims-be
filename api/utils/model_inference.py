@@ -42,7 +42,6 @@ def run_inference(
     keras.backend.clear_session()
 
     cwd= os.getcwd()
-    print(cwd)
     if not "utils" in str(cwd):
         cwd= os.path.join(cwd, "api", "utils")
 
@@ -176,12 +175,14 @@ def run_inference(
         data["date"] = current_date
 
         X = data[cols].values
-        demand = abs(scalerOut.inverse_transform(model.predict(X)))
-        data["previous_demand"] = np.random.uniform(0, demand.tolist()[0])
-        monthly_demand[current_date.month] += ceil(demand[0][0])
+        demand = scalerOut.inverse_transform(model.predict(X))
+        demand= 0 if np.isnan(demand[0][0]) else demand[0][0]
+        data["previous_demand"] = demand #np.random.uniform(0, demand.tolist()[0])
+        print(f"demand: {demand}")
+        monthly_demand[current_date.month] += ceil(demand)
         total_demand += demand
 
-    return ceil(total_demand[0][0]), monthly_demand
+    return ceil(total_demand), monthly_demand
 
 
 def compute_eoq(
@@ -190,7 +191,7 @@ def compute_eoq(
     """Computes the Economic Order Quantity"""
 
     if holding_cost == 1:
-        holding_cost = np.random.uniform(0.2, 0.3) * unit_cost
+        holding_cost = np.random.uniform(0.2, 0.3) * float(unit_cost)
 
     if ordering_cost == 1:
         ordering_cost = np.random.uniform(2, 300)

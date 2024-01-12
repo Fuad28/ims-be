@@ -13,7 +13,7 @@ def get_lead_time(product_item):
     order_items: QuerySet[OrderItem] = OrderItem.objects.filter(
         order__status=OrderStatusEnum.COMPLETED, 
         product_item=product_item
-        ).order_by("order__placement_date").last(3)
+        ).order_by("order__placement_date").reverse()[0:3]
     
     lead_time = 0
 

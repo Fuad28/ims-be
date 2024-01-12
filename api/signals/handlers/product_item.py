@@ -10,20 +10,30 @@ from api.utils.reorder_point import compute_reorder_point, get_yesterdays_demand
 def handle_product_save(sender, **kwargs):
     product_item: ProductItem= kwargs["instance"]
 
-    if product_item.last_forcast:
-        if product_item.last_forcast.year != timezone.now().year:
-            product_item.annual_demand, _= run_inference(
-                product_id= product_item.category.name,
-                last_demand= get_yesterdays_demand(product_item)
-            )
-            
-            product_item.eoq= compute_eoq(
-                demand= product_item.annual_demand, 
-                unit_cost= product_item.cost_price,
-                ordering_cost= product_item.ordering_cost,
-                holding_cost= product_item.holding_cost
-            )
+    compute= False
 
-            product_item.reordering_point= compute_reorder_point(product_item)
+    if not product_item.last_forcast:
+        compute= True 
+    
+    elif product_item.last_forcast.year != timezone.now().year:
+        compute= True
 
-            product_item.save()
+    if compute:
+
+        product_item.annual_demand, _= run_inference(
+            product_id= product_item.category.name,
+            last_demand= get_yesterdays_demand(product_item)
+        )
+        
+        product_item.eoq= compute_eoq(
+            demand= product_item.annual_demand, 
+            unit_cost= product_item.cost_price,
+            ordering_cost= product_item.ordering_cost,
+            holding_cost= product_item.holding_cost
+        )
+
+        product_item.reordering_point= compute_reorder_point(product_item)
+
+        product_item.last_forcast= timezone.now()
+        
+        product_item.save()

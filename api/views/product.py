@@ -26,24 +26,31 @@ class ProductItemViewSet(ModelViewSet):
     
     def retrieve(self, request, *args, **kwargs):
         product_item: ProductItem= self.get_object()
+        compute= False
 
-        if product_item.last_forcast:
-            if product_item.last_forcast.year != timezone.now().year:
+        if not product_item.last_forcast:
+            compute= True 
+        
+        elif product_item.last_forcast.year != timezone.now().year:
+            compute= True
 
-                product_item.annual_demand, _= run_inference(
-                    product_id= product_item.category.name,
-                    last_demand= get_yesterdays_demand(product_item)
-                )
-                
-                product_item.eoq= compute_eoq(
-                    demand= product_item.annual_demand, 
-                    unit_cost= product_item.cost_price,
-                    ordering_cost= product_item.ordering_cost,
-                    holding_cost= product_item.holding_cost
-                )
+        if compute:
 
-                product_item.reordering_point= compute_reorder_point(product_item)
+            product_item.annual_demand, _= run_inference(
+                product_id= product_item.category.name,
+                last_demand= get_yesterdays_demand(product_item)
+            )
+            
+            product_item.eoq= compute_eoq(
+                demand= product_item.annual_demand, 
+                unit_cost= product_item.cost_price,
+                ordering_cost= product_item.ordering_cost,
+                holding_cost= product_item.holding_cost
+            )
 
-                product_item.save()
+            product_item.reordering_point= compute_reorder_point(product_item)
+
+            product_item.last_forcast= timezone.now()
+            product_item.save()
                 
         return super().retrieve(request, *args, **kwargs)
