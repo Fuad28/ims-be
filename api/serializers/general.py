@@ -8,10 +8,6 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", "name"]
 
-    def create(self, validated_data):
-        validated_data["business"] = self.context["request"].user.business
-        return super().create(validated_data)
-
 
 class SizeCategorySerializer(serializers.ModelSerializer):
     class Meta:
