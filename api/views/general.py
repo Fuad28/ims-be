@@ -16,4 +16,5 @@ class SizeCategoryViewSet(ModelViewSet):
 class CategoryViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = CategorySerializer
+    queryset= Category.objects.all()
     http_method_names= ["get"]
